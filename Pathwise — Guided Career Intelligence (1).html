@@ -1,0 +1,1205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pathwise — Guided Career Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07070d;
+  --tx: #ecebf5;
+  --mu: #9a98b3;
+  --card: rgba(255, 255, 255, .055);
+  --bd: rgba(255, 255, 255, .12);
+  --ac: #f5c26b;
+  --ac2: #8b7bff;
+  --ac3: #35d0c0;
+  --tr: rgba(255, 255, 255, .09);
+  --lamp-shade: #232238;
+  --lamp-stand: #3a3852;
+  --input-bg: rgba(10, 10, 18, .65);
+  color-scheme: dark;
+  box-sizing: border-box;
+}
+:root[data-theme=light] {
+  --bg: #f6f4ee;
+  --tx: #1b1a2b;
+  --mu: #6a6880;
+  --card: rgba(255, 255, 255, .78);
+  --bd: rgba(30, 20, 60, .13);
+  --ac: #b7791f;
+  --ac2: #5b45e0;
+  --ac3: #0f9d8f;
+  --tr: rgba(30, 20, 60, .1);
+  --lamp-shade: #e4e0d5;
+  --lamp-stand: #b8b3a6;
+  --input-bg: rgba(255, 255, 255, .85);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--tx);
+  font: 15px/1.55 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.5s ease, color 0.3s ease;
+}
+
+/* Ambient Orbs & Interactive Spotlight */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(95px);
+  z-index: 0;
+  animation: fl 18s ease-in-out infinite alternate;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+.o1 { width: 480px; height: 480px; background: var(--ac2); top: -120px; left: -100px; opacity: .38; }
+.o2 { width: 420px; height: 420px; background: var(--ac); bottom: -140px; right: -80px; opacity: .24; animation-delay: -6s; }
+.o3 { width: 340px; height: 340px; background: var(--ac3); top: 40%; left: 55%; opacity: .18; animation-delay: -11s; }
+body.auth-mode:not(.light-on) .o1,
+body.auth-mode:not(.light-on) .o2,
+body.auth-mode:not(.light-on) .o3 { opacity: 0.08; }
+@keyframes fl { to { transform: translate(70px, 50px) scale(1.18); } }
+
+.spot {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(560px circle at var(--x, 50%) var(--y, 25%), rgba(245, 194, 107, .10), transparent 60%);
+}
+
+/* Main Wrapper & Clean Top Navigation */
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 22px 20px 80px;
+}
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 26px;
+}
+.logo {
+  font: 700 20px 'Playfair Display', Georgia, serif;
+}
+.logo i { color: var(--ac); font-style: normal; }
+.tg {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  color: var(--tx);
+  border-radius: 99px;
+  padding: 7px 14px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  transition: .2s;
+}
+.tg:hover { border-color: var(--ac); }
+
+/* ================= LAMP PULL SIGN-IN SCENE ================= */
+#authView {
+  min-height: calc(100vh - 130px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+}
+.auth-hint {
+  margin-bottom: 26px;
+  text-align: center;
+}
+.auth-hint span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  border-radius: 99px;
+  background: var(--card);
+  border: 1px solid var(--bd);
+  font-size: 13px;
+  color: var(--mu);
+  transition: .4s;
+}
+body.light-on .auth-hint span {
+  border-color: var(--ac);
+  color: var(--ac);
+  box-shadow: 0 0 24px rgba(245, 194, 107, .2);
+}
+.scene {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  position: relative;
+  width: 100%;
+}
+@media (max-width: 780px) {
+  .scene { flex-direction: column; gap: 32px; }
+  .lamp { transform: scale(0.86); }
+}
+
+/* Lamp Styling Matched to Pathwise Theme */
+.lamp {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 220px;
+  height: 350px;
+  flex-shrink: 0;
+}
+.lamp-glow {
+  position: absolute;
+  top: 30px;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 194, 107, .32) 0%, rgba(139, 123, 255, .12) 45%, transparent 72%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  z-index: 0;
+}
+body.light-on .lamp-glow { opacity: 1; }
+
+.shade {
+  width: 200px;
+  height: 96px;
+  background: linear-gradient(145deg, var(--lamp-shade), #151424);
+  border: 1px solid var(--bd);
+  border-radius: 100px 100px 18px 18px;
+  position: relative;
+  z-index: 3;
+  transition: all 0.45s ease;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 10px;
+}
+.shade::after {
+  content: 'PATHWISE';
+  font-size: 9.5px;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,.22);
+  font-weight: 600;
+}
+body.light-on .shade {
+  background: linear-gradient(180deg, #fffdf7 0%, #f5c26b 100%);
+  border-color: #ffe5ad;
+  box-shadow:
+    0 28px 75px rgba(245, 194, 107, 0.65),
+    0 0 38px rgba(255, 245, 210, 0.85),
+    inset 0 -8px 20px rgba(245, 194, 107, 0.75);
+}
+body.light-on .shade::after { color: rgba(20, 16, 10, .55); }
+
+.stand {
+  width: 14px;
+  height: 220px;
+  background: var(--lamp-stand);
+  z-index: 1;
+  transition: all 0.4s ease;
+}
+body.light-on .stand {
+  background: linear-gradient(180deg, #f5c26b, var(--lamp-stand));
+  box-shadow: 0 0 25px rgba(245, 194, 107, 0.3);
+}
+.base {
+  width: 140px;
+  height: 18px;
+  background: var(--lamp-stand);
+  border-radius: 10px;
+  z-index: 1;
+  border: 1px solid var(--bd);
+  transition: all 0.4s ease;
+}
+body.light-on .base {
+  background: #d8c39e;
+  box-shadow: 0 6px 20px rgba(245, 194, 107, .25);
+}
+
+/* 360-Degree Pull Cord */
+.cord-wrapper {
+  position: absolute;
+  top: 96px;
+  left: calc(50% + 18px);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: grab;
+  padding: 0 14px 14px 14px;
+  margin-left: -14px;
+  transform-origin: top center;
+  will-change: transform;
+  touch-action: none;
+}
+.cord-wrapper:active { cursor: grabbing; }
+.cord-line {
+  width: 2px;
+  height: 90px;
+  background: var(--mu);
+  transition: background 0.3s;
+  will-change: height;
+}
+body.light-on .cord-line { background: var(--ac); }
+.cord-knob {
+  width: 12px;
+  height: 16px;
+  background: linear-gradient(135deg, var(--ac), var(--ac2));
+  border-radius: 6px;
+  box-shadow: 0 0 12px rgba(245, 194, 107, .45);
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+.cord-wrapper:hover .cord-knob {
+  transform: scale(1.2);
+  box-shadow: 0 0 18px rgba(245, 194, 107, .85);
+}
+
+/* Login Card */
+.login-card {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: 24px;
+  padding: 34px 32px;
+  width: 100%;
+  max-width: 390px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  opacity: 0.12;
+  transform: translateY(22px) scale(0.96);
+  pointer-events: none;
+  filter: blur(2px);
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+body.light-on .login-card {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  filter: blur(0);
+  border-color: rgba(245, 194, 107, .35);
+}
+.login-card h2 {
+  font: 700 26px 'Playfair Display', Georgia, serif;
+  margin: 4px 0 6px;
+}
+.form-group { margin-bottom: 16px; text-align: left; }
+.form-group label {
+  display: block;
+  color: var(--mu);
+  font-size: 12.5px;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.form-group input {
+  width: 100%;
+  padding: 12px 15px;
+  background: var(--input-bg);
+  border: 1px solid var(--bd);
+  border-radius: 12px;
+  color: var(--tx);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.form-group input:focus {
+  border-color: var(--ac);
+  box-shadow: 0 0 0 3px rgba(245, 194, 107, 0.16);
+}
+.demo-strip {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--bd);
+}
+.demo-strip small {
+  display: block;
+  color: var(--mu);
+  font-size: 11.5px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.demo-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.demo-btn {
+  background: rgba(139, 123, 255, .12);
+  border: 1px solid rgba(139, 123, 255, .3);
+  color: var(--tx);
+  border-radius: 99px;
+  padding: 5px 11px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: .2s;
+}
+.demo-btn:hover {
+  border-color: var(--ac);
+  background: rgba(245, 194, 107, .18);
+}
+
+/* ================= CORE PATHWISE APP STYLING ================= */
+.pg { height: 4px; border-radius: 9px; background: var(--tr); margin-bottom: 18px; overflow: hidden; }
+.pg i { display: block; height: 100%; background: linear-gradient(90deg, var(--ac2), var(--ac)); transition: .4s; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: 22px;
+  padding: 28px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 10px 40px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08);
+  margin-bottom: 16px;
+  animation: in .45s both;
+}
+@keyframes in { from { opacity: 0; transform: translateY(12px); } }
+.eb { letter-spacing: 3px; font-size: 11px; color: var(--ac); text-transform: uppercase; }
+h1 { font: 700 clamp(28px, 5vw, 42px)/1.15 'Playfair Display', Georgia, serif; margin: 10px 0; }
+h1 em {
+  font-style: normal;
+  background: linear-gradient(90deg, var(--ac), var(--ac2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+h2 { font: 600 22px 'Playfair Display', Georgia, serif; margin: 0 0 6px; }
+h3 { margin: 0 0 10px; font-size: 12.5px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ac); }
+.mu { color: var(--mu); font-size: 14px; }
+input[type=text].main-inp {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  color: var(--tx);
+  border-radius: 14px;
+  padding: 13px 16px;
+  font: inherit;
+  width: 100%;
+  margin-top: 14px;
+}
+.err { display: none; color: #ff7a90; font-size: 13px; margin-top: 8px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 18px; }
+.opt {
+  border: 1px solid var(--bd);
+  background: var(--card);
+  border-radius: 16px;
+  padding: 16px;
+  cursor: pointer;
+  transition: .2s;
+}
+.opt:hover, .opt.on {
+  border-color: var(--ac);
+  transform: translateY(-2px);
+  box-shadow: 0 0 24px rgba(245, 194, 107, .18);
+}
+.opt .e { font-size: 26px; }
+.opt b { display: block; margin-top: 4px; }
+.opt small { color: var(--mu); }
+.chip {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  color: var(--tx);
+  border-radius: 99px;
+  padding: 10px 18px;
+  margin: 0 8px 10px 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  transition: .2s;
+}
+.chip:hover { border-color: var(--ac); }
+.chip.on {
+  background: linear-gradient(135deg, var(--ac), var(--ac2));
+  color: #0b0b14;
+  border-color: transparent;
+  font-weight: 600;
+}
+.chip.sm {
+  padding: 5px 12px;
+  font-size: 12px;
+  margin: 4px 6px 4px 0;
+}
+.chip.sm.on {
+  background: rgba(255, 122, 144, .22);
+  color: #ff9eb0;
+  border-color: #ff7a90;
+}
+.btn {
+  background: linear-gradient(135deg, var(--ac), #e39a3b);
+  color: #0b0b14;
+  border: 0;
+  border-radius: 99px;
+  padding: 12px 26px;
+  font: 600 15px 'Inter', sans-serif;
+  cursor: pointer;
+  box-shadow: 0 0 28px rgba(245, 194, 107, .35);
+  transition: .2s;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; transform: none; }
+.btn.alt { background: var(--card); color: var(--tx); border: 1px solid var(--bd); box-shadow: none; }
+.row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; align-items: center; }
+.sl-box {
+  background: rgba(255,255,255,.025);
+  border: 1px solid var(--bd);
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin: 10px 0;
+}
+.sl { display: grid; grid-template-columns: 150px 1fr 44px; gap: 10px; align-items: center; font-size: 14px; }
+.sl b { text-align: right; color: var(--ac); }
+input[type=range] { accent-color: var(--ac); width: 100%; cursor: pointer; }
+.sub-weak { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--bd); }
+.sk { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.seg { display: flex; border: 1px solid var(--bd); border-radius: 99px; overflow: hidden; }
+.seg button { background: none; border: 0; color: var(--mu); padding: 8px 14px; cursor: pointer; font: inherit; font-size: 13px; transition: .2s; }
+.seg button.on { background: var(--ac); color: #0b0b14; font-weight: 600; }
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 16px; }
+.tabs .chip { margin: 0; }
+.ring { width: 120px; height: 120px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.ring div { width: 96px; height: 96px; border-radius: 50%; background: var(--bg); display: grid; place-items: center; font: 700 28px 'Playfair Display', serif; }
+.top { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+ul { padding-left: 18px; margin: 6px 0; }
+li { margin: 6px 0; }
+ol { padding-left: 20px; }
+.cr { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 14px; border: 1px solid transparent; cursor: pointer; transition: .2s; }
+.cr:hover, .cr.on { background: var(--card); border-color: var(--bd); }
+.cr.on { border-color: var(--ac); }
+.cr .e { font-size: 24px; }
+.cr .t { flex: 1; }
+.cr small { color: var(--mu); display: block; font-size: 12.5px; }
+.pc { font-weight: 700; color: var(--ac); }
+.tag { font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: var(--ac3); }
+.bar { height: 7px; border-radius: 9px; background: var(--tr); position: relative; margin: 5px 0 2px; }
+.bar i { display: block; height: 100%; border-radius: 9px; background: linear-gradient(90deg, var(--ac2), var(--ac3)); }
+.bar u { position: absolute; top: -3px; width: 2px; height: 13px; background: var(--ac); }
+.gp { font-size: 14px; margin: 12px 0; }
+.gp span { color: var(--mu); float: right; font-size: 12px; }
+.pl { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+.day { background: var(--card); border: 1px solid var(--bd); border-radius: 14px; padding: 12px; }
+.day b { color: var(--ac); }
+.day span { display: block; font-weight: 600; font-size: 14px; }
+.day small { color: var(--mu); }
+.up { color: var(--ac3); font-weight: 600; font-size: 12.5px; }
+.dn { color: #ff7a90; font-weight: 600; font-size: 12.5px; }
+.note { border-left: 3px solid var(--ac); padding: 4px 14px; margin: 14px 0; color: var(--mu); }
+.strat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px; }
+.strat-box { background: rgba(255,255,255,.03); border: 1px solid var(--bd); border-radius: 16px; padding: 16px; }
+.strat-box h4 { margin: 0 0 6px; font-size: 15px; color: var(--tx); display: flex; justify-content: space-between; align-items: center; }
+.badge-warn { background: rgba(255,122,144,.16); color: #ff8ca0; font-size: 11px; padding: 2px 8px; border-radius: 99px; }
+.badge-ok { background: rgba(53,208,192,.16); color: var(--ac3); font-size: 11px; padding: 2px 8px; border-radius: 99px; }
+.radar-wrap { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; justify-content: space-between; }
+.legend { display: flex; gap: 16px; font-size: 12.5px; color: var(--mu); margin-top: 8px; justify-content: center; }
+.legend span::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+.legend .l1::before { background: var(--ac3); }
+.legend .l2::before { background: var(--ac2); }
+
+@media (max-width: 560px) {
+  .sl { grid-template-columns: 110px 1fr 36px; }
+  .card { padding: 20px; }
+}
+@media print {
+  .tg, .tabs, .row, #authView { display: none !important; }
+  .card { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; }
+}
+</style>
+</head>
+<body class="auth-mode">
+<div class="orb o1"></div>
+<div class="orb o2"></div>
+<div class="orb o3"></div>
+<div class="spot" id="sp"></div>
+
+<div class="wrap">
+  <nav>
+    <div class="logo">Path<i>wise</i></div>
+    <button class="tg" onclick="th()">◐ Theme</button>
+  </nav>
+
+  <!-- ================= LAMP SIGN-IN VIEW ================= -->
+  <div id="authView">
+    <div class="auth-hint">
+      <span id="lampHint">💡 Pull the lamp cord in any direction (or tap it) to illuminate &amp; sign in</span>
+    </div>
+
+    <div class="scene">
+      <!-- Interactive 360° Physics Lamp -->
+      <div class="lamp" id="lamp">
+        <div class="lamp-glow"></div>
+        <div class="shade"></div>
+        <div class="cord-wrapper" id="cordWrapper" title="Pull in any direction or click to toggle light">
+          <div class="cord-line" id="cordLine"></div>
+          <div class="cord-knob" id="cordKnob"></div>
+        </div>
+        <div class="stand"></div>
+        <div class="base"></div>
+      </div>
+
+      <!-- Theme-Matched Glassmorphic Sign-In Card -->
+      <div class="login-card">
+        <h2>Welcome</h2>
+        <p class="mu" style="margin:0 0 18px;font-size:13px">Sign in to discover your personalized career pathway.</p>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter your name" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="••••••••" value="pathwise" required>
+          </div>
+          <button type="submit" class="btn" style="width:100%">Sign In →</button>
+        </form>
+
+        <div class="demo-strip">
+          <small>⚡ Instant Demo Profiles</small>
+          <div class="demo-btns">
+            <button type="button" class="demo-btn" onclick="loadDemo('aarav')">💻 Hidden Coder</button>
+            <button type="button" class="demo-btn" onclick="loadDemo('meera')">🧬 Bio Researcher</button>
+            <button type="button" class="demo-btn" onclick="loadDemo('kabir')">🎨 UX Strategist</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MAIN PATHWISE APPLICATION ================= -->
+  <div id="app" style="display:none"></div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s || '').replace(/[&<>"']/g, c => '&#' + c.charCodeAt(0) + ';');
+
+/* ================= LAMP PHYSICS & AUTH LOGIC ================= */
+const cordWrapper = $('#cordWrapper');
+const cordLine = $('#cordLine');
+const lamp = $('#lamp');
+const body = document.body;
+const loginForm = $('#loginForm');
+
+const baseHeight = 90;
+const maxPullExtension = 130;
+const pullThreshold = 38;
+
+let isDragging = false, startX = 0, startY = 0, anchorX = 0, anchorY = 0;
+let currentStretch = 0, currentAngle = 0, totalDragMovement = 0, swingAnimationId = null;
+
+const getClientCoords = e => (e.touches && e.touches.length > 0)
+  ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  : { x: e.clientX, y: e.clientY };
+
+const updateAnchorCoords = () => {
+  const r = lamp.getBoundingClientRect();
+  anchorX = r.left + (r.width / 2) + 18;
+  anchorY = r.top + 96;
+};
+
+const startDrag = e => {
+  if (swingAnimationId) { cancelAnimationFrame(swingAnimationId); swingAnimationId = null; }
+  isDragging = true;
+  totalDragMovement = 0;
+  updateAnchorCoords();
+  const { x, y } = getClientCoords(e);
+  startX = x; startY = y;
+  cordLine.style.transition = 'none';
+  cordWrapper.style.transition = 'none';
+};
+
+const onDrag = e => {
+  if (!isDragging) return;
+  const { x, y } = getClientCoords(e);
+  totalDragMovement = Math.hypot(x - startX, y - startY);
+  const dx = x - anchorX, dy = y - anchorY;
+  const distFromAnchor = Math.hypot(dx, dy);
+  currentStretch = Math.max(-25, Math.min(distFromAnchor - baseHeight, maxPullExtension));
+  const newHeight = Math.max(40, baseHeight + currentStretch);
+  const radians = Math.atan2(dx, dy);
+  currentAngle = -(radians * (180 / Math.PI));
+  cordLine.style.height = `${newHeight}px`;
+  cordWrapper.style.transform = `rotate(${currentAngle}deg)`;
+};
+
+const animateSpringRelease = (initialAngle, initialStretch) => {
+  let angle = initialAngle, angularVelocity = 0, stretch = initialStretch, stretchVelocity = 0;
+  const angleStiffness = 0.14, angleDamping = 0.86, stretchStiffness = 0.28, stretchDamping = 0.72;
+  const step = () => {
+    stretchVelocity = (stretchVelocity + (-stretchStiffness * stretch)) * stretchDamping;
+    stretch += stretchVelocity;
+    angularVelocity = (angularVelocity + (-angleStiffness * angle)) * angleDamping;
+    angle += angularVelocity;
+    cordLine.style.height = `${Math.max(40, baseHeight + stretch)}px`;
+    cordWrapper.style.transform = `rotate(${angle}deg)`;
+    if (Math.abs(angle) > 0.15 || Math.abs(angularVelocity) > 0.15 || Math.abs(stretch) > 0.2 || Math.abs(stretchVelocity) > 0.2) {
+      swingAnimationId = requestAnimationFrame(step);
+    } else {
+      cordLine.style.height = `${baseHeight}px`;
+      cordWrapper.style.transform = `rotate(0deg)`;
+      swingAnimationId = null;
+    }
+  };
+  swingAnimationId = requestAnimationFrame(step);
+};
+
+const toggleLampLight = () => {
+  body.classList.toggle('light-on');
+  const isOn = body.classList.contains('light-on');
+  $('#lampHint').innerHTML = isOn
+    ? '✨ Lamp illuminated! Sign in below to launch Pathwise'
+    : '💡 Pull the lamp cord in any direction (or tap it) to illuminate &amp; sign in';
+  if (isOn) setTimeout(() => $('#username').focus(), 250);
+};
+
+const endDrag = () => {
+  if (!isDragging) return;
+  isDragging = false;
+  const pulledPastThreshold = currentStretch > pullThreshold || totalDragMovement > 52;
+  const isQuickClick = totalDragMovement < 6;
+  if (pulledPastThreshold) {
+    toggleLampLight();
+    animateSpringRelease(currentAngle, currentStretch);
+  } else if (isQuickClick) {
+    toggleLampLight();
+    animateSpringRelease(7, 36);
+  } else {
+    animateSpringRelease(currentAngle, currentStretch);
+  }
+  currentStretch = 0; currentAngle = 0; totalDragMovement = 0;
+};
+
+cordWrapper.addEventListener('mousedown', startDrag);
+window.addEventListener('mousemove', onDrag);
+window.addEventListener('mouseup', endDrag);
+cordWrapper.addEventListener('touchstart', startDrag, { passive: true });
+window.addEventListener('touchmove', onDrag, { passive: true });
+window.addEventListener('touchend', endDrag);
+
+loginForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const uname = ($('#username').value || '').trim();
+  if (!uname) return;
+  enterApp(uname);
+});
+
+function enterApp(uname) {
+  body.classList.remove('auth-mode');
+  $('#authView').style.display = 'none';
+  $('#app').style.display = 'block';
+  S.name = uname;
+  draw();
+}
+
+/* ================= KNOWLEDGE BASE & DATA MODELS ================= */
+const SUBJ = {
+  math: 'Mathematics', phy: 'Physics', chem: 'Chemistry', bio: 'Biology', eng: 'English',
+  cs: 'Computer Science', elec: 'Electrical & Electronics', mech: 'Mechanical / Engg. Drawing',
+  stat: 'Statistics', econ: 'Economics', acc: 'Accountancy', bst: 'Business Studies',
+  law: 'Legal Studies', pol: 'Political Science', hist: 'History', psy: 'Psychology',
+  art: 'Art & Design', media: 'Media & Communication', anat: 'Anatomy & Physiology'
+};
+
+const SUBTOPICS = {
+  math: ['Calculus & Integration', 'Algebra & Matrices', 'Vectors & 3D', 'Probability'],
+  phy: ['Mechanics & Kinematics', 'Electromagnetism', 'Optics & Waves', 'Thermodynamics'],
+  chem: ['Organic Mechanisms', 'Physical Numericals', 'Inorganic Bonding', 'Chemical Kinetics'],
+  bio: ['Genetics & Molecular Bio', 'Human Physiology', 'Cell Biology', 'Ecology'],
+  cs: ['Data Structures & Algo', 'OOP & Modular Code', 'Pointers & Recursion', 'Databases / SQL'],
+  elec: ['Circuit Theorems', 'Semiconductors', 'Digital Logic', 'AC Machines'],
+  mech: ['Free-Body Mechanics', 'CAD & Projections', 'Strength of Materials', 'Heat Transfer'],
+  stat: ['Hypothesis Testing', 'Probability Distributions', 'Regression Analysis', 'Sampling'],
+  econ: ['Microeconomic Curves', 'Macro & Fiscal Policy', 'Econometrics', 'Market Structures'],
+  acc: ['Balance Sheets & Ledgers', 'Cash Flow Statements', 'Cost Accounting', 'Ratio Analysis'],
+  bst: ['Operations & Supply Chain', 'Marketing Strategy', 'Financial Management', 'Org Behaviour'],
+  law: ['Constitutional Law', 'Contract & Tort Law', 'Legal Reasoning', 'Case Brief Analysis'],
+  pol: ['Indian Constitution', 'Global Geopolitics', 'Public Administration', 'Political Theory'],
+  hist: ['Modern World History', 'Source Interpretation', 'Archival Research', 'Socio-Economic Eras'],
+  psy: ['Cognitive Processes', 'Research Methods', 'Behavioural Disorders', 'Counselling Ethics'],
+  art: ['Visual Hierarchy & Grid', 'User Research & Empathy', 'Prototyping / Figma', 'Color & Typography'],
+  media: ['Scriptwriting & Narrative', 'Video / Audio Editing', 'Audience Analytics', 'Media Ethics'],
+  anat: ['Musculoskeletal System', 'Neuroanatomy', 'Cardiovascular Path', 'Clinical Diagnostics'],
+  eng: ['Analytical Writing', 'Critical Comprehension', 'Public Speaking', 'Syntactic Precision']
+};
+
+const LEARN_STRAT = {
+  math: 'Switch from passive formula reading to spaced-repetition problem sets (15 mins concept + 35 mins timed numericals).',
+  phy: 'Derive equations from free-body diagrams first; pair every chapter with a PhET interactive simulation.',
+  chem: 'Build reaction-mechanism flowcharts for Organic and a flashcards deck for Inorganic exceptions.',
+  bio: 'Use active-recall diagram labelling and Feynman-style teaching aloud to lock in physiological pathways.',
+  cs: 'Dry-run algorithms on paper before coding; build 1 mini-project per concept instead of memorizing syntax.',
+  elec: 'Simulate circuits in Tinkercad/LTspice to visualize voltage drops before solving nodal equations.',
+  mech: 'Sketch orthographic projections daily and relate formulas to physical mechanisms.',
+  stat: 'Analyze real CSV datasets in Python/Excel so distributions and p-values feel concrete.',
+  econ: 'Draw supply-demand shifts for daily financial news stories to connect theory with markets.',
+  acc: 'Practice full ledger-to-trial-balance cycles under timed conditions without looking at solution keys.',
+  bst: 'Write 1-page teardowns of real startups using SWOT and Porter’s Five Forces.',
+  law: 'Apply the IRAC method (Issue, Rule, Application, Conclusion) to daily landmark case summaries.',
+  pol: 'Map constitutional articles to current legislative bills and practice structured 200-word editorials.',
+  hist: 'Construct cause-and-effect timelines linking economic shifts to political revolutions.',
+  psy: 'Connect each psychological theory to a real behavioural case study and design mini-observation logs.',
+  art: 'Redesign 1 flawed everyday app screen per week and document your UX rationale.',
+  media: 'Story-board 60-second explainers and analyze hook retention in top-performing creators.',
+  anat: 'Use 3D anatomy atlases alongside clinical case vignettes to link structure with pathology.',
+  eng: 'Summarize complex op-eds in 3 sentences daily and record 2-minute impromptu speaking drills.'
+};
+
+const FS = {
+  tech: ['math','phy','chem','cs','elec','mech','stat','eng'],
+  health: ['bio','chem','phy','anat','psy','eng'],
+  biz: ['econ','acc','bst','math','stat','eng'],
+  design: ['art','media','eng','psy','cs','hist'],
+  law: ['law','pol','hist','econ','eng','psy'],
+  sci: ['math','phy','chem','bio','stat','cs','eng'],
+  ns: Object.keys(SUBJ)
+};
+
+const SK = {
+  logic: 'Logical reasoning',
+  creative: 'Creativity',
+  comm: 'Communication',
+  lead: 'Leadership',
+  hands: 'Hands-on skills',
+  data: 'Data & analysis'
+};
+
+const INT = {
+  tech: 'Technology',
+  design: 'Design',
+  biz: 'Business',
+  health: 'Healthcare',
+  research: 'Research',
+  law: 'Law & Policy',
+  fin: 'Finance',
+  arts: 'Arts & Media'
+};
+
+const EVID = {
+  proj: { l: 'Built apps / hardware / DIY projects', k: ['hands','logic'] },
+  hack: { l: 'Competitions / Olympiads / Hackathons', k: ['logic','data'] },
+  club: { l: 'Led a student club / event / team', k: ['lead','comm'] },
+  artp: { l: 'Created design / video / writing portfolio', k: ['creative','comm'] },
+  lab:  { l: 'Conducted lab experiments / data analysis', k: ['data','hands'] },
+  vol:  { l: 'Peer tutoring / community volunteering', k: ['comm','lead'] }
+};
+
+const F = {
+  tech: { n: 'Technology & Engineering', e: '💻', d: 'Software, data, machines', i: ['tech','research'] },
+  health: { n: 'Medical & Health', e: '🩺', d: 'Doctors, pharmacy, therapy', i: ['health'] },
+  biz: { n: 'Business & Finance', e: '💹', d: 'Startups, management, CA', i: ['biz','fin'] },
+  design: { n: 'Design & Creative', e: '🎨', d: 'UX, media, arts', i: ['design','arts'] },
+  law: { n: 'Law & Public Service', e: '⚖️', d: 'Law, UPSC, policy', i: ['law'] },
+  sci: { n: 'Science & Research', e: '🔬', d: 'Labs, discovery, academia', i: ['research'] },
+  ns: { n: 'Not sure yet', e: '🧭', d: 'Show me what fits me best', i: ['tech','design','biz'] }
+};
+
+const STG = {
+  '11th': ['Class 11', 'Choose your direction and build strong basics. Explore before you specialise.'],
+  '12th': ['Class 12', 'Balance board exams with entrance prep. Shortlist 3 courses and colleges.'],
+  FY: ['First Year (FY)', 'Explore clubs and electives and build solid fundamentals and habits.'],
+  SY: ['Second Year (SY)', 'Build projects, pick a specialisation and try small internships.'],
+  TY: ['Third Year (TY)', 'Land internships and prepare for placements or higher studies.'],
+  PG: ['Final Year / Postgraduate', 'Finalise your portfolio, apply for roles or research and grow your network.']
+};
+
+const PRE = { phy: 'math', cs: 'math', bio: 'chem', elec: 'phy', mech: 'phy', stat: 'math', acc: 'math', econ: 'math' };
+const REL = {
+  logic: ['math','phy','stat','cs'],
+  data: ['math','cs','stat','econ','acc'],
+  comm: ['eng','media','pol','law'],
+  hands: ['phy','chem','mech','elec','anat'],
+  lead: ['bst','pol','econ'],
+  creative: ['eng','art','media']
+};
+
+const C = [
+  { n: 'Software Engineer', e: '💻', f: 'tech', s: { math: 2, cs: 3, stat: 1, eng: 1 }, k: { logic: 3, data: 2, creative: 1 }, i: ['tech'], r: ['Master one language (Python/Java) and core data structures', 'Build 3 portfolio projects and publish them on GitHub', 'Learn web or app development with Git and teamwork', 'Go for a CS degree or internships that fit your stage'] },
+  { n: 'Data Scientist', e: '📊', f: 'tech', s: { math: 3, stat: 3, cs: 2 }, k: { data: 3, logic: 2 }, i: ['tech','research','fin'], r: ['Strengthen statistics and probability', 'Learn Python, SQL and data visualisation', 'Complete 2 Kaggle-style projects', 'Pursue Data Science / AI courses or a degree'] },
+  { n: 'Core / Mechanical Engineer', e: '⚙️', f: 'tech', s: { phy: 3, math: 3, mech: 3, chem: 1 }, k: { hands: 3, logic: 2 }, i: ['tech','research'], r: ['Strengthen mechanics and thermodynamics', 'Learn CAD and try 3D printing or robotics', 'Join a robotics or go-kart club', 'Target B.Tech or a core-industry internship'] },
+  { n: 'Electrical / Electronics Engineer', e: '🔌', f: 'tech', s: { elec: 3, phy: 3, math: 2 }, k: { hands: 3, logic: 3 }, i: ['tech'], r: ['Master circuits, Ohm’s law and basic electronics', 'Build Arduino or Raspberry Pi projects', 'Learn embedded systems and a simulation tool', 'Aim for B.Tech/Diploma in Electrical or ECE plus a core internship'] },
+  { n: 'Doctor / Healthcare', e: '🩺', f: 'health', s: { bio: 3, chem: 3, anat: 2, phy: 1, eng: 1 }, k: { comm: 2, hands: 2, logic: 1 }, i: ['health'], r: ['Master NCERT Biology and Chemistry', 'Prepare for NEET with a weekly test routine', 'Volunteer at a clinic for real exposure', 'Explore MBBS, BDS, Pharmacy and Physiotherapy'] },
+  { n: 'Psychologist / Counsellor', e: '🧠', f: 'health', s: { psy: 3, bio: 1, stat: 1, eng: 1 }, k: { comm: 3, logic: 1, lead: 1 }, i: ['health','research'], r: ['Read intro psychology and observe human behaviour', 'Volunteer with a helpline or school counsellor', 'Learn basic research methods and statistics', 'Pursue B.A./B.Sc. Psychology then a clinical or counselling M.A.'] },
+  { n: 'Entrepreneur / Manager', e: '🚀', f: 'biz', s: { bst: 3, econ: 2, eng: 2, acc: 1 }, k: { lead: 3, comm: 3, creative: 1 }, i: ['biz','fin'], r: ['Run a small real venture (even a campus stall)', 'Learn marketing and finance basics', 'Join an entrepreneurship cell and find mentors', 'Consider BBA, BMS or a startup incubator'] },
+  { n: 'Finance / Chartered Accountant', e: '💹', f: 'biz', s: { acc: 3, econ: 2, math: 2, stat: 1 }, k: { data: 3, logic: 1 }, i: ['fin','biz'], r: ['Learn accounting basics and Excel modelling', 'Start CA Foundation or CFA Level 1 prep', 'Follow markets and write simple analyses', 'Choose B.Com, Economics or BBA-Finance'] },
+  { n: 'UX / Product Designer', e: '🎨', f: 'design', s: { art: 3, psy: 2, cs: 1, media: 1 }, k: { creative: 3, comm: 2 }, i: ['design','arts','tech'], r: ['Learn Figma and core design principles', 'Create a portfolio of 3 case studies', 'Prepare for UCEED / NID / NIFT', 'Practise user research and feedback loops'] },
+  { n: 'Media & Content Creator', e: '🎬', f: 'design', s: { media: 3, eng: 2, art: 2 }, k: { creative: 3, comm: 3 }, i: ['arts','design'], r: ['Start a channel or blog on a niche you love', 'Learn video editing and storytelling', 'Build a portfolio and a consistent posting habit', 'Explore mass communication or film courses'] },
+  { n: 'Law / Civil Services', e: '⚖️', f: 'law', s: { law: 3, pol: 3, hist: 2, eng: 2, econ: 1 }, k: { comm: 3, logic: 2, lead: 1 }, i: ['law'], r: ['Read newspapers daily and write short opinions', 'Join debate or MUN to sharpen argument skills', 'Prepare for CLAT or UPSC foundation', 'Study the Constitution and current affairs'] },
+  { n: 'Research Scientist', e: '🔬', f: 'sci', s: { phy: 2, chem: 2, bio: 2, math: 2, stat: 1 }, k: { logic: 2, data: 2, creative: 1 }, i: ['research'], r: ['Attempt Olympiads and INSPIRE-type scholarships', 'Seek lab internships and read research papers', 'Target IISER / IISc / integrated M.Sc.', 'Build a mini research project and present it'] }
+];
+
+let S, st = 0, R = [], sel = 0, tab = 'ov', SM = {};
+
+const init = (keepUser = true) => {
+  const prevName = keepUser && S ? S.name : '';
+  S = {
+    name: prevName,
+    field: '',
+    stage: '',
+    subs: new Set(),
+    m: {},
+    weakTopics: {},
+    k: {},
+    i: new Set(),
+    ev: new Set(),
+    h: 0
+  };
+  Object.keys(SK).forEach(k => S.k[k] = 6);
+  st = 0;
+  if ($('#app').style.display !== 'none') draw();
+};
+
+function loadDemo(type) {
+  init(false);
+  if (type === 'aarav') {
+    S.name = 'Aarav Sharma'; S.field = 'tech'; S.stage = '12th';
+    S.subs = new Set(['math','phy','cs','eng']);
+    S.m = { math: 62, phy: 54, cs: 91, eng: 76 };
+    S.weakTopics = { math: new Set(['Calculus & Integration']), phy: new Set(['Electromagnetism','Mechanics & Kinematics']) };
+    S.k = { logic: 9, creative: 6, comm: 6, lead: 6, hands: 9, data: 9 };
+    S.i = new Set(['tech','design']);
+    S.ev = new Set(['proj','hack']);
+    S.h = 3;
+  } else if (type === 'meera') {
+    S.name = 'Meera Nair'; S.field = 'health'; S.stage = 'FY';
+    S.subs = new Set(['bio','chem','psy','stat']);
+    S.m = { bio: 88, chem: 58, psy: 86, stat: 78 };
+    S.weakTopics = { chem: new Set(['Organic Mechanisms','Physical Numericals']) };
+    S.k = { logic: 6, creative: 6, comm: 9, lead: 6, hands: 6, data: 9 };
+    S.i = new Set(['health','research']);
+    S.ev = new Set(['lab','vol']);
+    S.h = 2;
+  } else {
+    S.name = 'Kabir Verma'; S.field = 'biz'; S.stage = 'SY';
+    S.subs = new Set(['econ','bst','art','eng']);
+    S.m = { econ: 68, bst: 74, art: 89, eng: 84 };
+    S.weakTopics = { econ: new Set(['Microeconomic Curves']) };
+    S.k = { logic: 6, creative: 9, comm: 9, lead: 9, hands: 6, data: 6 };
+    S.i = new Set(['design','biz','tech']);
+    S.ev = new Set(['artp','club']);
+    S.h = 3;
+  }
+  enterApp(S.name);
+  fin();
+}
+
+function effectiveSkills(kMap) {
+  const out = { ...kMap };
+  S.ev.forEach(eKey => {
+    if (EVID[eKey]) {
+      EVID[eKey].k.forEach(skKey => { out[skKey] = Math.min(10, (out[skKey] || 6) + 0.8); });
+    }
+  });
+  return out;
+}
+
+function sc(c, m, kRaw, iSet, sub) {
+  const k = effectiveSkills(kRaw);
+  const w = (o, f) => { let a = 0, b = 0; for (const x in o) { a += o[x] * f(x); b += o[x]; } return a / b; };
+  const n = c.i.filter(x => iSet.has(x)).length;
+  const t = iSet.size ? (n ? 60 + 40 * n / c.i.length : 20) : 50;
+  return Math.round(0.45 * w(c.s, x => sub.has(x) ? m[x] : 35) + 0.30 * w(c.k, x => k[x] * 10) + 0.25 * t);
+}
+
+const rank = (m, k) => C.map(c => ({ c, s: sc(c, m, k, S.i, S.subs) })).sort((a, b) => b.s - a.s);
+
+const nav = (ok, l) => `<div class="row">${st > 0 ? '<button class="btn alt" onclick="bk()">← Back</button>' : ''}<button class="btn" id="cb" ${ok ? '' : 'disabled'} onclick="nx()">${l || 'Continue →'}</button></div>`;
+
+const STEPS = [
+  () => `<div class="eb">Adaptive Student Intelligence</div><h1>Let’s find the path that <em>truly fits you</em></h1><p class="mu">Just a few quick questions, one at a time. It takes about two minutes.</p><input type="text" class="main-inp" id="nm" placeholder="What should we call you?" value="${esc(S.name)}" oninput="ne(0)" onkeydown="if(event.key=='Enter')nx()"><div class="err" id="er">⚠ Name is required. This field is mandatory.</div>${nav(1, 'Start →')}`,
+
+  () => `<h2>Which field are you aiming for?</h2><p class="mu">Pick the closest one. Not sure? That’s perfectly fine.</p><div class="grid">${Object.keys(F).map(k => `<div class="opt ${S.field == k ? 'on' : ''}" onclick="pick('field','${k}',this)"><span class="e">${F[k].e}</span><b>${F[k].n}</b><small>${F[k].d}</small></div>`).join('')}</div>${nav(!!S.field)}`,
+
+  () => `<h2>Where are you right now?</h2><p class="mu">This helps us give advice that suits your stage.</p><div class="grid">${Object.keys(STG).map(k => `<div class="opt ${S.stage == k ? 'on' : ''}" onclick="pick('stage','${k}',this)"><b>${STG[k][0]}</b></div>`).join('')}</div>${nav(!!S.stage)}`,
+
+  () => `<h2>${S.field == 'ns' ? 'Which subjects' : 'Which ' + F[S.field].n + ' subjects'} do you study?</h2><p class="mu">Only subjects relevant to your field are shown. Select what you actually study (at least 2), then press Continue.</p><div style="margin-top:18px">${FS[S.field].map(k => `<button class="chip ${S.subs.has(k) ? 'on' : ''}" onclick="ts('${k}',this)">${SUBJ[k]}</button>`).join('')}</div>${nav(S.subs.size >= 2)}`,
+
+  () => `<h2>How do you score in them?</h2><p class="mu">Adjust your percentage and tap any specific sub-topics that feel tricky.</p>${[...S.subs].map(k => {
+    const wt = S.weakTopics[k] || new Set();
+    return `<div class="sl-box"><label class="sl"><span>${SUBJ[k]}</span><input type="range" min="0" max="100" value="${S.m[k]}" oninput="S.m['${k}']=+this.value;this.nextElementSibling.textContent=this.value"><b>${S.m[k]}</b></label><div class="sub-weak"><small class="mu" style="display:block;margin-bottom:4px">Weak sub-topics in ${SUBJ[k]} (optional):</small>${(SUBTOPICS[k] || []).map(t => `<button type="button" class="chip sm ${wt.has(t) ? 'on' : ''}" onclick="tw('${k}','${t}',this)">${t}</button>`).join('')}</div></div>`;
+  }).join('')}${nav(1)}`,
+
+  () => `<h2>How would you rate your skills?</h2><p class="mu">Be honest. This is how we spot strengths your marks may hide.</p>${Object.keys(SK).map(k => `<div class="sk"><span>${SK[k]}</span><div class="seg">${[['Just starting', 3], ['Comfortable', 6], ['Strong', 9]].map(([l, v]) => `<button type="button" class="${S.k[k] == v ? 'on' : ''}" onclick="sk('${k}',${v},this)">${l}</button>`).join('')}</div></div>`).join('')}${nav(1)}`,
+
+  () => `<h2>What interests you &amp; what have you tried hands-on?</h2><p class="mu">Pick your interests and any practical activities you have done outside standard exams.</p><h3>Interests (Pick at least 1)</h3><div style="margin-bottom:16px">${Object.keys(INT).map(k => `<button type="button" class="chip ${S.i.has(k) ? 'on' : ''}" onclick="ti('${k}',this)">${INT[k]}</button>`).join('')}</div><h3>Practical experience (Optional)</h3><div>${Object.keys(EVID).map(k => `<button type="button" class="chip ${S.ev.has(k) ? 'on' : ''}" onclick="tev('${k}',this)">✓ ${EVID[k].l}</button>`).join('')}</div>${nav(S.i.size >= 1)}`,
+
+  () => `<h2>How many hours a day can you study?</h2><p class="mu">We’ll fit your weekly plan to this.</p><div class="grid">${[[1, '1 hour'], [2, '2 hours'], [3, '3 hours'], [4, '4+ hours']].map(([v, l]) => `<div class="opt ${S.h == v ? 'on' : ''}" onclick="pick('h',${v},this)"><b>${l}</b></div>`).join('')}</div>${nav(!!S.h, 'Show my results ✨')}`
+];
+
+function draw() {
+  $('#app').innerHTML = `<div class="pg"><i style="width:${Math.round((st + 1) / STEPS.length * 100)}%"></i></div><div class="card">${STEPS[st]()}</div>`;
+}
+
+function pick(a, v, b) {
+  if (a == 'field' && S.field != v) { S.subs = new Set(); S.m = {}; S.weakTopics = {}; }
+  S[a] = v;
+  if (a == 'field' && S.i.size === 0) S.i = new Set(F[v].i);
+  [...b.parentNode.children].forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  $('#cb').disabled = false;
+}
+
+function ts(k, b) {
+  S.subs.has(k) ? S.subs.delete(k) : S.subs.add(k);
+  b.classList.toggle('on');
+  $('#cb').disabled = S.subs.size < 2;
+}
+
+function tw(subKey, topic, b) {
+  if (!S.weakTopics[subKey]) S.weakTopics[subKey] = new Set();
+  const set = S.weakTopics[subKey];
+  set.has(topic) ? set.delete(topic) : set.add(topic);
+  b.classList.toggle('on');
+}
+
+function ti(k, b) {
+  S.i.has(k) ? S.i.delete(k) : S.i.add(k);
+  b.classList.toggle('on');
+  $('#cb').disabled = S.i.size < 1;
+}
+
+function tev(k, b) {
+  S.ev.has(k) ? S.ev.delete(k) : S.ev.add(k);
+  b.classList.toggle('on');
+}
+
+function sk(k, v, b) {
+  S.k[k] = v;
+  [...b.parentNode.children].forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+}
+
+function bk() { st--; draw(); }
+function ne(v) { $('#er').style.display = v ? 'block' : 'none'; $('#nm').style.borderColor = v ? '#ff7a90' : ''; }
+
+function nx() {
+  if (st == 0) {
+    const n = ($('#nm').value || '').trim();
+    if (!n) { ne(1); $('#nm').focus(); return; }
+    S.name = n;
+  }
+  if (st == 3) {
+    [...S.subs].forEach(k => {
+      if (S.m[k] == null) S.m[k] = 60;
+      if (!S.weakTopics[k]) S.weakTopics[k] = new Set();
+    });
+  }
+  if (st == STEPS.length - 1) { fin(); return; }
+  st++;
+  draw();
+}
+
+function fin() {
+  const all = rank(S.m, S.k);
+  R = S.field == 'ns' ? all : [...all.filter(x => x.c.f == S.field), ...all.filter(x => x.c.f != S.field)];
+  R.best = all[0];
+  sel = 0;
+  tab = 'ov';
+  SM = { ...S.m };
+  res();
+}
+
+const why = c => {
+  const kEff = effectiveSkills(S.k);
+  const ss = Object.keys(c.s).filter(x => S.subs.has(x)).sort((x, y) => c.s[y] * S.m[y] - c.s[x] * S.m[x]);
+  const b = Object.keys(c.k).sort((x, y) => c.k[y] * kEff[y] - c.k[x] * kEff[x])[0];
+  const n = c.i.filter(x => S.i.has(x)).map(x => INT[x]);
+  return `Driven by ${ss.length ? SUBJ[ss[0]] + ' (' + S.m[ss[0]] + '%) and ' : ''}${SK[b].toLowerCase()}` + (n.length ? `, plus your interest in ${n.join(' & ')}.` : '.');
+};
+
+function gaps() {
+  const items = [...S.subs].filter(k => S.m[k] < 65 || (S.weakTopics[k] && S.weakTopics[k].size > 0)).sort((a, b) => S.m[a] - S.m[b]);
+  if (!items.length) return '<li>No major gaps. Nicely balanced.</li>';
+  return items.map(k => {
+    const p = PRE[k];
+    const rc = p && S.subs.has(p) && S.m[p] < 70 && S.m[p] < S.m[k] + 5
+      ? ` Likely root cause: <b>${SUBJ[p]}</b> (${S.m[p]}%). Fix that first.` : '';
+    const wt = S.weakTopics[k] && S.weakTopics[k].size ? ` Focus areas: <i>${[...S.weakTopics[k]].join(', ')}</i>.` : '';
+    return `<li><b>${SUBJ[k]}</b> at ${S.m[k]}%.${wt}${rc}</li>`;
+  }).join('');
+}
+
+function hidden() {
+  const kEff = effectiveSkills(S.k);
+  const found = Object.keys(SK).filter(k => {
+    const r = REL[k].filter(x => S.subs.has(x));
+    const a = r.length ? r.reduce((s, x) => s + S.m[x], 0) / r.length : 0;
+    return kEff[k] >= 7 && a < kEff[k] * 10 - 10;
+  }).map(k => `<li><b>${SK[k]}</b> is stronger than your marks show. Grades alone would miss it.</li>`);
+
+  if (S.ev.size > 0) {
+    found.push(`<li><b>Practical projects &amp; activities:</b> ${[...S.ev].map(x => EVID[x].l).join(', ')} — demonstrates real-world capability beyond marks.</li>`);
+  }
+  return found.join('') || '<li>Your marks and skills line up. Try practical projects to uncover more.</li>';
+}
+
+function radarSVG() {
+  const keys = Object.keys(SK);
+  const kEff = effectiveSkills(S.k);
+  const cx = 135, cy = 130, rad = 88;
+  const pt = (i, val) => {
+    const ang = (Math.PI * 2 * i) / keys.length - Math.PI / 2;
+    const r = (val / 100) * rad;
+    return `${(cx + r * Math.cos(ang)).toFixed(1)},${(cy + r * Math.sin(ang)).toFixed(1)}`;
+  };
+  const gridLevels = [33, 66, 100].map(lv => `<polygon points="${keys.map((_, i) => pt(i, lv)).join(' ')}" fill="none" stroke="var(--bd)" stroke-dasharray="3,3"/>`).join('');
+  const axes = keys.map((k, i) => {
+    const [x, y] = pt(i, 100).split(',');
+    const [lx, ly] = pt(i, 118).split(',');
+    return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--bd)"/><text x="${lx}" y="${ly}" fill="var(--mu)" font-size="10" text-anchor="middle" dominant-baseline="middle">${SK[k].split(' ')[0]}</text>`;
+  }).join('');
+
+  const skillPts = keys.map((k, i) => pt(i, Math.min(100, kEff[k] * 10))).join(' ');
+  const markPts = keys.map((k, i) => {
+    const r = REL[k].filter(x => S.subs.has(x));
+    const avg = r.length ? r.reduce((s, x) => s + S.m[x], 0) / r.length : 55;
+    return pt(i, avg);
+  }).join(' ');
+
+  return `<svg width="270" height="260" viewBox="0 0 270 260" style="display:block;margin:0 auto">
+    ${gridLevels}${axes}
+    <polygon points="${markPts}" fill="rgba(139,123,255,0.22)" stroke="var(--ac2)" stroke-width="2"/>
+    <polygon points="${skillPts}" fill="rgba(53,208,192,0.24)" stroke="var(--ac3)" stroke-width="2.2"/>
+  </svg>
+  <div class="legend"><span class="l1">Practical Skills</span><span class="l2">Subject Marks</span></div>`;
+}
+
+function list() {
+  return R.slice(0, 5).map((x, i) => `<div class="cr ${i == sel ? 'on' : ''}" onclick="sel=${i};$('#cl2').innerHTML=list();$('#rd').innerHTML=road()"><span class="e">${x.c.e}</span><div class="t"><span class="tag">${S.field != 'ns' && x.c.f == S.field ? 'Your aim' : S.field != 'ns' ? 'Also fits you' : ''}</span><b style="display:block">${x.c.n}</b><small>${why(x.c)}</small></div><span class="pc">${x.s}%</span></div>`).join('');
+}
+
+function road() {
+  const c = R[sel].c;
+  const kEff = effectiveSkills(S.k);
+  const row = (l, v, t) => `<div class="gp">${l}<span>${v >= t ? '✓ on track' : '+' + (t - v) + ' to go'}</span><div class="bar"><i style="width:${Math.min(100, v)}%"></i><u style="left:${t}%"></u></div></div>`;
+  return `<h3>Roadmap · ${c.n}</h3>` +
+    Object.keys(c.s).map(k => S.subs.has(k) ? row(SUBJ[k], S.m[k], 75) : `<div class="gp mu">${SUBJ[k]}<span>Not in your subjects</span></div>`).join('') +
+    Object.keys(c.k).map(k => row(SK[k], Math.round(kEff[k] * 10), 70)).join('') +
+    `<h3 style="margin-top:20px">Your next steps</h3><ol>${c.r.map(x => `<li>${x}</li>`).join('')}</ol>`;
+}
+
+function strategiesTab() {
+  const sortedSubs = [...S.subs].sort((a, b) => S.m[a] - S.m[b]);
+  const cards = sortedSubs.map(k => {
+    const score = S.m[k];
+    const wt = S.weakTopics[k] && S.weakTopics[k].size ? [...S.weakTopics[k]] : [];
+    const p = PRE[k];
+    const preAlert = p && S.subs.has(p) && S.m[p] < 70 && S.m[p] <= score + 5
+      ? `<p style="margin:8px 0 0;font-size:12.5px;color:var(--ac)">🔗 <b>Prerequisite Fix:</b> Revise <b>${SUBJ[p]}</b> fundamentals alongside ${SUBJ[k]}.</p>` : '';
+    const statusBadge = score < 65
+      ? `<span class="badge-warn">Needs focus · ${score}%</span>`
+      : `<span class="badge-ok">Strong · ${score}%</span>`;
+    return `<div class="strat-box">
+      <h4>${SUBJ[k]} ${statusBadge}</h4>
+      <p class="mu" style="margin:6px 0;font-size:13.5px">${LEARN_STRAT[k]}</p>
+      ${wt.length ? `<div style="margin-top:8px"><small class="eb" style="font-size:10px">Sub-topics to practice:</small><div style="margin-top:4px">${wt.map(t => `<span class="chip sm on" style="cursor:default">${t}</span>`).join('')}</div></div>` : ''}
+      ${preAlert}
+    </div>`;
+  }).join('');
+
+  return `<div class="card">
+    <h2>Personalized Learning Strategies</h2>
+    <p class="mu">Custom study methods based on your subject marks, sub-topic gaps, and prerequisites.</p>
+    <div class="strat-grid">${cards}</div>
+  </div>`;
+}
+
+function simOut() {
+  const r = rank(SM, S.k), b = {};
+  R.forEach(x => b[x.c.n] = x.s);
+  return r.slice(0, 3).map(x => {
+    const d = x.s - b[x.c.n];
+    return `<div class="cr"><span class="e">${x.c.e}</span><div class="t"><b>${x.c.n}</b></div><span class="pc">${x.s}%</span> <span class="${d >= 0 ? 'up' : 'dn'}">${d > 0 ? '▲ +' + d : d < 0 ? '▼ ' + d : '–'}</span></div>`;
+  }).join('');
+}
+
+function plan() {
+  const a = [...S.subs].sort((x, y) => S.m[x] - S.m[y]);
+  let f = a.filter(k => S.m[k] < 70);
+  if (f.length < 2) f = a.slice(0, 2);
+  const n = S.h >= 2 ? 2 : 1, t = Math.round(S.h * 60 / n);
+  const top = Object.keys(SK).sort((x, y) => S.k[y] - S.k[x])[0];
+  return ['Mon','Tue','Wed','Thu','Fri'].map((d, i) => `<div class="day"><b>${d}</b>${Array.from({ length: n }, (_, j) => {
+    const subKey = f[(i * n + j) % f.length];
+    const wt = S.weakTopics[subKey] && S.weakTopics[subKey].size ? [...S.weakTopics[subKey]][0] : 'concept fix + practice';
+    return `<span>${SUBJ[subKey]}</span><small>${t} min · ${wt}</small>`;
+  }).join('')}</div>`).join('') +
+  `<div class="day"><b>Sat</b><span>${SK[top]} project</span><small>90 min · build something real</small></div>` +
+  `<div class="day"><b>Sun</b><span>Weekly review</span><small>30 min · self-test weak topics</small></div>`;
+}
+
+function bodyContent() {
+  const a = R[0], b = R[1];
+  if (tab == 'ov') {
+    const g = R.best;
+    return `<div class="card">
+      <div class="top">
+        <div class="ring" style="background:conic-gradient(var(--ac) ${a.s}%,var(--tr) 0)"><div>${a.s}</div></div>
+        <div style="flex:1;min-width:230px">
+          <div class="eb">Best match${S.field != 'ns' ? ' in ' + F[S.field].n : ''}</div>
+          <h2 style="font-size:28px">${a.c.e} ${a.c.n}</h2>
+          <p class="mu" style="margin:4px 0 0">${why(a.c)}</p>
+        </div>
+      </div>
+      ${g.c != a.c && g.s > a.s + 5 ? `<div class="note">Honest note: your current profile fits <b>${g.c.n}</b> even better (${g.s}%). Worth a look in the Careers tab.</div>` : ''}
+    </div>
+    <div class="card"><h3>Your focus at ${STG[S.stage][0]}</h3><p style="margin:0">${STG[S.stage][1]}</p></div>
+    <div class="card">
+      <div class="radar-wrap">
+        <div style="flex:1;min-width:250px">
+          <h3>Your subjects</h3>
+          ${[...S.subs].map(k => `<div class="gp">${SUBJ[k]}<span>${S.m[k]}%</span><div class="bar"><i style="width:${S.m[k]}%"></i></div></div>`).join('')}
+          <h3 style="margin-top:22px">Knowledge gaps</h3>
+          <ul>${gaps()}</ul>
+          <h3 style="margin-top:22px">Hidden strengths</h3>
+          <ul>${hidden()}</ul>
+        </div>
+        <div style="flex:none">${radarSVG()}</div>
+      </div>
+    </div>
+    <div class="card"><h3>For parents &amp; counsellors</h3><p style="margin:0">${esc(S.name)} shows the strongest fit for <b>${a.c.n}</b> and <b>${b.c.n}</b>. ${[...S.subs].filter(k => S.m[k] < 65).length ? 'Extra support is suggested in ' + [...S.subs].filter(k => S.m[k] < 65).map(k => SUBJ[k]).join(', ') + '.' : 'No subject needs urgent support.'} Treat this as guidance beyond marks, not a final decision.</p></div>`;
+  }
+  if (tab == 'car') return `<div class="card"><h3>Career matches</h3><div id="cl2">${list()}</div><p class="mu">Score = marks 45% + skills 30% + interest fit 25%. Tap a career for its roadmap.</p></div><div class="card" id="rd">${road()}</div>`;
+  if (tab == 'st') return strategiesTab();
+  if (tab == 'wi') return `<div class="card"><h2>What if I improve?</h2><p class="mu">Move a subject and watch your top careers change.</p>${[...S.subs].map(k => `<label class="sl"><span>${SUBJ[k]}</span><input type="range" min="0" max="100" value="${SM[k]}" oninput="SM['${k}']=+this.value;this.nextElementSibling.textContent=this.value;$('#so').innerHTML=simOut()"><b>${SM[k]}</b></label>`).join('')}<div id="so" style="margin-top:14px">${simOut()}</div></div>`;
+  return `<div class="card"><h2>Your weekly plan</h2><p class="mu">Built only from the ${S.subs.size} subjects you study and your ${S.h == 4 ? '4+' : S.h} hr/day. Weakest first.</p><div class="pl">${plan()}</div></div>`;
+}
+
+function res() {
+  $('#app').innerHTML = `<div class="card">
+    <div class="eb">Your results</div>
+    <h1 style="margin:6px 0 4px">Hi ${esc(S.name)}, here’s your <em>pathway</em></h1>
+    <p class="mu" style="margin:0">${STG[S.stage][0]} · aiming for ${F[S.field].n}</p>
+    <div class="row" style="margin-top:14px">
+      <button class="btn alt" onclick="init(true)">↺ Start over</button>
+    </div>
+  </div>
+  <div class="tabs">
+    ${[['ov', 'Overview'], ['car', 'Careers'], ['st', 'Strategies'], ['wi', 'What-if'], ['pl', 'Weekly plan']].map(([k, l]) => `<button class="chip ${tab == k ? 'on' : ''}" onclick="tab='${k}';res()">${l}</button>`).join('')}
+  </div>
+  ${bodyContent()}`;
+  scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function th() {
+  const r = document.documentElement;
+  r.dataset.theme = r.dataset.theme == 'light' ? 'dark' : 'light';
+}
+
+addEventListener('pointermove', e => {
+  const s = $('#sp').style;
+  s.setProperty('--x', e.clientX + 'px');
+  s.setProperty('--y', e.clientY + 'px');
+});
+
+init(false);
+</script>
+</body>
+</html>
+
+ 
